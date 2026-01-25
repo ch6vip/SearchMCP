@@ -10,7 +10,9 @@
 
 ### 反检测能力
 
-使用 [Camoufox](https://github.com/nicepkg/camoufox) 反检测浏览器，可绑过 Cloudflare 等 WAF 防护。
+使用 [Camoufox](https://github.com/daijro/camoufox) 反检测浏览器，可绑过 Cloudflare 等 WAF 防护。
+
+> ⚠️ **注意**: Camoufox 目前不支持 Windows 系统。Windows 用户将自动回退到普通 headless 模式，反检测能力会降低。
 
 ### 监控面板
 
@@ -24,8 +26,8 @@
 # 安装依赖
 pip install -r requirements.txt
 
-# 安装 Playwright 浏览器
-playwright install
+# 安装 Camoufox 浏览器
+camoufox fetch
 ```
 
 ## 运行
