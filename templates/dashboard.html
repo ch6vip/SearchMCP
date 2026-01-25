@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP 服务监控</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="dashboard-header">
+            <div class="logo-section">
+                <div class="logo-icon">🚀</div>
+                <h1>MCP 服务监控</h1>
+            </div>
+            <div class="header-actions">
+                <span id="last-updated" class="last-updated">未更新</span>
+                <button id="refresh-btn" class="refresh-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    刷新
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <!-- 概览卡片 -->
+            <section class="stats-overview">
+                <div class="card total-calls">
+                    <div class="card-icon">📊</div>
+                    <div class="card-content">
+                        <h3>总调用次数</h3>
+                        <div class="number" id="total-count">-</div>
+                    </div>
+                </div>
+                <div class="card active-tools">
+                    <div class="card-icon">🛠️</div>
+                    <div class="card-content">
+                        <h3>活跃工具数</h3>
+                        <div class="number" id="tools-count">-</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grid-layout">
+                <!-- 工具使用分布 -->
+                <section class="card tool-distribution">
+                    <h2>工具使用统计</h2>
+                    <div id="stats-container" class="stats-grid">
+                        <!-- JS 将在这里插入卡片 -->
+                    </div>
+                </section>
+
+                <!-- 最近日志 -->
+                <section class="card recent-logs">
+                    <h2>最近调用记录</h2>
+                    <div class="table-container">
+                        <table id="logs-table">
+                            <thead>
+                                <tr>
+                                    <th>工具名称</th>
+                                    <th>调用时间</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- JS 将在这里插入行 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

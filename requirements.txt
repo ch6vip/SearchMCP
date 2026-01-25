@@ -1,0 +1,10 @@
+fastmcp==2.13.1
+camoufox[geoip]==0.4.11
+httpx==0.28.1
+starlette==0.40.0
+markdownify==1.2.2
+Flask==3.1.0
+requests>=2.31.0
+uvicorn==0.38.0
+Crawl4AI==0.7.7
+playwright==1.52.0
