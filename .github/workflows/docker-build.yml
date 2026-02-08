@@ -10,7 +10,7 @@ on:
 
 env:
   DOCKER_REGISTRY: docker.io
-  IMAGE_NAME: searchmcp
+  IMAGE_NAME: SearchMCP
 
 jobs:
   build-and-push:
