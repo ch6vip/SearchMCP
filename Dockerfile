@@ -6,9 +6,8 @@ WORKDIR /app
 # 创建非 root 用户
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
-# 安装系统依赖
-# Camoufox 和 Playwright 需要额外的系统库
-RUN apt-get update && apt-get install -y \
+# 安装系统依赖（合并为单层，减少镜像大小）
+RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     gnupg \
     ca-certificates \
@@ -33,16 +32,30 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制依赖文件
+# 复制依赖文件（在复制源码前，便于缓存）
 COPY requirements.txt .
 
-# 安装 Python 依赖
+# 安装 Python 依赖（使用缓存）
+ARG CAMOUFOX_CACHE_DIR=/tmp/camoufox-cache
+
+# 创建缓存目录
+RUN mkdir -p ${CAMOUFOX_CACHE_DIR}
+
+# 安装 Camoufox 浏览器（使用缓存）
+RUN if [ -d "${CAMOUFOX_CACHE_DIR}" ] && [ "$(ls -A ${CAMOUFOX_CACHE_DIR})" ]; then \
+        echo "Using cached Camoufox..."; \
+        cp -r ${CAMOUFOX_CACHE_DIR}/* ~/.camoufox/ || true; \
+    fi && \
+    camoufox fetch && \
+    if [ ! -d "${CAMOUFOX_CACHE_DIR}" ]; then \
+        mkdir -p ${CAMOUFOX_CACHE_DIR}; \
+    fi && \
+    cp -r ~/.camoufox/* ${CAMOUFOX_CACHE_DIR}/ || true
+
+# 安装 Python 依赖（在 Camoufox 之后，便于缓存分离）
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 安装 Camoufox 浏览器（以 root 安装，所有用户可用）
-RUN camoufox fetch
-
-# 复制项目文件
+# 复制项目文件（放在最后，便于代码修改时缓存命中）
 COPY main.py .
 COPY templates/ ./templates/
 COPY static/ ./static/
