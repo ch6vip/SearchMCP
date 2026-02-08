@@ -23,6 +23,11 @@ DB_PATH = os.getenv("DB_PATH", "/app/usage_stats.db")
 
 # --- 数据库初始化 ---
 def init_db():
+    # 确保数据库目录存在
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+    
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
@@ -420,4 +425,4 @@ async def api_stats(request):
 
 if __name__ == "__main__":
     # 使用 SSE 模式运行
-    mcp.run(transport="sse", host="0.0.0.0",port=9191)
+    mcp.run(transport="sse", host="0.0.0.0", port=9191)

@@ -32,30 +32,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制依赖文件（在复制源码前，便于缓存）
+# 复制依赖文件
 COPY requirements.txt .
 
-# 安装 Python 依赖（使用缓存）
-ARG CAMOUFOX_CACHE_DIR=/tmp/camoufox-cache
-
-# 创建缓存目录
-RUN mkdir -p ${CAMOUFOX_CACHE_DIR}
-
-# 安装 Camoufox 浏览器（使用缓存）
-RUN if [ -d "${CAMOUFOX_CACHE_DIR}" ] && [ "$(ls -A ${CAMOUFOX_CACHE_DIR})" ]; then \
-        echo "Using cached Camoufox..."; \
-        cp -r ${CAMOUFOX_CACHE_DIR}/* ~/.camoufox/ || true; \
-    fi && \
-    camoufox fetch && \
-    if [ ! -d "${CAMOUFOX_CACHE_DIR}" ]; then \
-        mkdir -p ${CAMOUFOX_CACHE_DIR}; \
-    fi && \
-    cp -r ~/.camoufox/* ${CAMOUFOX_CACHE_DIR}/ || true
-
-# 安装 Python 依赖（在 Camoufox 之后，便于缓存分离）
+# 安装 Python 依赖
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制项目文件（放在最后，便于代码修改时缓存命中）
+# 安装 Camoufox 浏览器
+RUN camoufox fetch
+
+# 复制项目文件
 COPY main.py .
 COPY templates/ ./templates/
 COPY static/ ./static/
