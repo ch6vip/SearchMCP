@@ -3,6 +3,7 @@ import asyncio
 import sqlite3
 import re
 import urllib.parse
+import os
 from datetime import datetime
 from fastmcp import FastMCP
 from camoufox.async_api import AsyncCamoufox
@@ -17,9 +18,12 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 mcp = FastMCP("Web Surfer")
 SEARXNG_URL = "http://127.0.0.1:10003"
 
+# 数据库文件路径
+DB_PATH = os.getenv("DB_PATH", "/app/usage_stats.db")
+
 # --- 数据库初始化 ---
 def init_db():
-    conn = sqlite3.connect("usage_stats.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS usage_log (
@@ -32,7 +36,7 @@ def init_db():
     conn.close()
 
 def log_usage(tool_name: str):
-    conn = sqlite3.connect("usage_stats.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("INSERT INTO usage_log (tool_name, timestamp) VALUES (?, ?)",
                    (tool_name, datetime.now().isoformat()))
@@ -405,7 +409,7 @@ async def dashboard(request):
 
 @mcp.custom_route("/api/stats", methods=["GET"])
 async def api_stats(request):
-    conn = sqlite3.connect("usage_stats.db")
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT tool_name, COUNT(*) FROM usage_log GROUP BY tool_name")
     tool_stats = cursor.fetchall()

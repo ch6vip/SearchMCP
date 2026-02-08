@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   searchmcp:
-    image: ${DOCKER_USERNAME:-your-username}/searchmcp:latest
+    image: ch6vip/searchmcp:latest
     # build: .  # 如需本地构建，取消注释此行并注释上方 image 行
     container_name: searchmcp
     ports:
@@ -10,8 +10,9 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - DISPLAY=:99
+      - DB_PATH=/app/data/usage_stats.db
     volumes:
-      - ./usage_stats.db:/app/usage_stats.db
+      - ./data:/app/data
     restart: unless-stopped
     networks:
       - searchmcp-network
