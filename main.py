@@ -313,7 +313,7 @@ async def read_url(url: str, page: int = 1, chunk_size: int = 15000) -> str:
 
 async def _google_search_impl(query: str, limit: int = 10) -> str:
     """
-    使用 Google 搜索并返回结果。通过 Camoufox 反检测浏览器爬取 Google 搜索页面。
+    使用 Bing 搜索并返回结果。通过 Camoufox 反检测浏览器爬取 Bing 搜索页面。
 
     参数:
     - query: 搜索关键词
@@ -324,10 +324,11 @@ async def _google_search_impl(query: str, limit: int = 10) -> str:
     try:
         browser = await get_browser()
 
-        # 构建 Google 搜索 URL
-        search_url = f"https://www.google.com/search?q={urllib.parse.quote(query)}&num={limit}&hl=zh-CN"
+        # 构建 Bing 搜索 URL (国内可用)
+        search_url = f"https://www.bing.com/search?q={urllib.parse.quote(query)}"
+        # 注意：Bing 不支持 num 参数，limit 逻辑主要靠后续的正则提取控制
 
-        print(f"🦊 正在使用 Camoufox 搜索 Google: {query}")
+        print(f"🦊 正在使用 Camoufox 搜索 Bing: {query}")
 
         # 创建新页面并抓取
         page_obj = await browser.new_page()
@@ -344,7 +345,7 @@ async def _google_search_impl(query: str, limit: int = 10) -> str:
 
         # 使用简单的正则表达式提取搜索结果
         output_blocks = []
-        output_blocks.append(f"### 🔎 Google 搜索结果: `{query}`\n")
+        output_blocks.append(f"### 🔎 Bing 搜索结果: `{query}`\n")
 
         # 提取搜索结果链接和标题
         results = []
@@ -355,8 +356,8 @@ async def _google_search_impl(query: str, limit: int = 10) -> str:
 
         seen_urls = set()
         for title, url in matches:
-            # 过滤掉 Google 自身的链接和重复链接
-            if 'google.com' in url or 'gstatic.com' in url or 'googleapis.com' in url:
+            # 过滤 Google 和 Bing 自身的链接
+            if 'google.com' in url or 'bing.com' in url or 'microsoft.com' in url:
                 continue
             if url in seen_urls:
                 continue
@@ -384,7 +385,7 @@ async def _google_search_impl(query: str, limit: int = 10) -> str:
         return "\n\n".join(output_blocks)
 
     except Exception as e:
-        return f"Google 搜索出错: {str(e)}"
+        return f"Bing 搜索出错: {str(e)}"
 
 
 # --- 工具 3: 谷歌搜索 ---
