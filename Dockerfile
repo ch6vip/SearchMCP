@@ -30,6 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxkbcommon0 \
     libxrandr2 \
     xdg-utils \
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制依赖文件
@@ -60,5 +61,5 @@ ENV PYTHONUNBUFFERED=1
 ENV DISPLAY=:99
 ENV DB_PATH=/app/data/usage_stats.db
 
-# 启动服务
-CMD ["python", "main.py"]
+# 启动服务（使用脚本启动 Xvfb 和应用）
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -accel +extension GLX +render -noreset & python main.py"]
