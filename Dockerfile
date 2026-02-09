@@ -3,10 +3,10 @@ FROM python:3.11-slim
 # 设置工作目录
 WORKDIR /app
 
-# 创建非 root 用户
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# 1. 创建非 root 用户，并显式创建主目录 (-m)
+RUN groupadd -r appuser && useradd -r -g appuser -m appuser
 
-# 安装系统依赖（合并为单层，减少镜像大小）
+# 2. 安装系统依赖 (已添加 xvfb)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     gnupg \
@@ -39,8 +39,12 @@ COPY requirements.txt .
 # 安装 Python 依赖
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 安装 Camoufox 浏览器
-RUN camoufox fetch
+# 3. 安装 Camoufox 浏览器并处理权限
+# 先下载到默认位置(root)，然后移动到 appuser 的目录并授权
+RUN camoufox fetch && \
+    mkdir -p /home/appuser/.cache && \
+    mv /root/.cache/camoufox /home/appuser/.cache/ && \
+    chown -R appuser:appuser /home/appuser
 
 # 复制项目文件
 COPY main.py .
@@ -60,6 +64,8 @@ EXPOSE 9191
 ENV PYTHONUNBUFFERED=1
 ENV DISPLAY=:99
 ENV DB_PATH=/app/data/usage_stats.db
+# 显式指定 HOME 变量，确保工具能找到主目录
+ENV HOME=/home/appuser
 
-# 启动服务（使用脚本启动 Xvfb 和应用）
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1024x768x24 -accel +extension GLX +render -noreset & python main.py"]
+# 启动服务
+CMD ["python", "main.py"]
